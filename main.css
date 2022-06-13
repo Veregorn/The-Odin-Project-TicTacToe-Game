@@ -48,3 +48,20 @@ table {
 }
 
 /* MY OWN STYLES FROM HERE */
+
+body {
+    background-color: #266F89;
+}
+
+#container {
+    width: 900px;
+    height: 100vh;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 50px;
+}
+
+h1 {
+    font-size: 56px;
+    color: #D2E48E;
+}
