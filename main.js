@@ -23,12 +23,31 @@ let displayController = (function() {
 })();
 
 // A factory for the players
-const Player = () => {
+const Player = (type) => {
+    // Only two possible values: 'human' OR 'ia'
+    const _type = type;
+    let _level = undefined;
+    const getType = () => _type;
+    const setLevel = (level) => {
+        if (_type == "ia") {
+            if (level == "easy" || level == "medium" || level == "hard") {
+                _level = level;
+            } else {
+                console.log("Invalid level entry. Level must be one of these: easy, medium, hard");
+            }
+        } else {
+            console.log("You can't set IA level in a human player");
+        }
+    }
+    const getLevel = () => _level;
+    // Function that generates auto movement for 'ia' type players
+    // const genMov = () => ;
 
+    return {getType,setLevel,getLevel};
 };
 
 //We need two players to play the game
-const player1 = Player();
-const player2 = Player();
+const player1 = Player("human");
+const player2 = Player("human");
 
 gameBoard.printBoard();
