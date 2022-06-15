@@ -32,10 +32,26 @@ let gameBoard = (function() {
         return _board[pos];
     }
 
+    function isWinner(sign) {
+        // There is an X axis win of sign
+        if ((getBoardPos(0) == getBoardPos(1) == getBoardPos(2) == sign) || (getBoardPos(3) == getBoardPos(4) == getBoardPos(5) == sign) || (getBoardPos(6) == getBoardPos(7) == getBoardPos(8) == sign)) {
+            return true;
+        // There is an Y axis win of sign
+        } else if ((getBoardPos(0) == getBoardPos(3) == getBoardPos(6) == sign) || (getBoardPos(1) == getBoardPos(4) == getBoardPos(7) == sign) || (getBoardPos(2) == getBoardPos(5) == getBoardPos(8) == sign)) {
+            return true;
+        // There is a diagonal win of sign
+        } else if ((getBoardPos(0) == getBoardPos(4) == getBoardPos(8) == sign) || (getBoardPos(2) == getBoardPos(4) == getBoardPos(6) == sign)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     return {
         isEmpty,
         setBoard,
-        getBoardPos
+        getBoardPos,
+        isWinner
     }
 })();
 
@@ -68,6 +84,8 @@ let displayController = (function() {
             // Paint the value on screen
             paintSquare(pos);
             _movCounter++;
+            // At last I need to check if there is a winner
+            
         } else {
             console.log("You are trying to fill an occupied square!!!");
         }
