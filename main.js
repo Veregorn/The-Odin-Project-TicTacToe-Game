@@ -72,9 +72,16 @@ let displayController = (function() {
     let _movCounter = 1;
     // DOM attributes
     const _gameSquares = document.querySelectorAll('.game-square');
-    const _modalContainer = document.querySelector('.modal-container');
+    const _modalContEnd = document.getElementById('mod-con-end');
     const _modalTitle = document.querySelector('.modal-title');
     const _tryAgain = document.getElementById('try-again');
+    const _modalContForm = document.getElementById('mod-con-form');
+    const _editPlayerNames = document.getElementById('edit-names');
+    const _saveNames = document.getElementById('save-nms-btn');
+    const _player1Input = document.getElementById('player-1');
+    const _player2Input = document.getElementById('player-2');
+    const _player1ShownName = document.getElementById('player-1-show-name');
+    const _player2ShownName = document.getElementById('player-2-show-name');
     
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
@@ -83,6 +90,22 @@ let displayController = (function() {
 
     // Adding Event Listener to 'Try Again' button
     _tryAgain.addEventListener('click', () => {resetGame()});
+
+    // Adding Event Listener to 'Edit Player Names' button
+    _editPlayerNames.addEventListener('click', () => _modalContForm.classList.add('show'));
+
+    // Adding Event Listener to 'Save' button
+    _saveNames.addEventListener('click', () => {
+        player1.setName(_player1Input.value);
+        player2.setName(_player2Input.value);
+        refreshPlayerNames();
+        _modalContForm.classList.remove('show');
+    });
+
+    function refreshPlayerNames() {
+        _player1ShownName.textContent = player1.getName();
+        _player2ShownName.textContent = player2.getName();
+    }
 
     function changeTurnOwner() {
         if (_turnOwner == "X") {
@@ -110,12 +133,12 @@ let displayController = (function() {
                 } else {
                     _modalTitle.textContent = player2.getName() + " wins!!!";
                 }
-                _modalContainer.classList.add('show');
+                _modalContEnd.classList.add('show');
             } else {
                 // I need to check if there's a tie
                 if (_movCounter == 9) {
                     _modalTitle.textContent = "There's a TIE. Nobody wins";
-                    _modalContainer.classList.add('show');
+                    _modalContEnd.classList.add('show');
                 } else {
                     // If there is no winner and there is no tie, we can change the player turn and move the counter
                     changeTurnOwner();
@@ -143,7 +166,7 @@ let displayController = (function() {
     function resetGame() {
         gameBoard.resetBoard();
         cleanDisplay();
-        _modalContainer.classList.remove('show');
+        _modalContEnd.classList.remove('show');
         _movCounter = 1;
         _turnOwner = "X";
     }
@@ -155,12 +178,18 @@ let displayController = (function() {
 const Player = (type,name) => {
     // Only two possible values: 'human' OR 'ia'
     const _type = type;
-    const _name = name;
+    let _name = name;
     let _level = undefined;
 
     const getType = () => _type;
 
     const getName = () => _name;
+
+    const setName = (name) => {
+        if (name != "") {
+            _name = name;
+        }
+    }
     
     const setLevel = (level) => {
         if (_type == "ia") {
@@ -183,10 +212,11 @@ const Player = (type,name) => {
         getType,
         getName,
         setLevel,
-        getLevel
+        getLevel,
+        setName
     };
 };
 
 //We need two players to play the game
-const player1 = Player("human", "Bill");
-const player2 = Player("human", "John");
+const player1 = Player("human", "Player 1");
+const player2 = Player("human", "Player 2");

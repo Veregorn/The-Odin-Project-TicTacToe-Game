@@ -10,6 +10,16 @@
 <body>
     <div id="container">
         <h1>Tic Tac Toe</h1>
+        <div class="battle-pres">
+            <p class="player-name" id="player-1-show-name">Player 1</p>
+            <p class="versus">Vs</p>
+            <p class="player-name" id="player-2-show-name">Player 2</p>
+        </div>
+        <div class="control-buttons">
+            <button id="start-game">Start</button>
+            <button id="edit-names">Edit Player Names</button>
+            <button id="reset-game">Reset</button>
+        </div>
         <div id="game-board">
             <div class="game-square top left" id="gs-0"></div>
             <div class="game-square top" id="gs-1"></div>
@@ -21,11 +31,21 @@
             <div class="game-square bottom" id="gs-7"></div>
             <div class="game-square right bottom" id="gs-8"></div>
         </div>
-        <div class="modal-container">
-            <div class="modal">
+        <div class="modal-container" id="mod-con-end">
+            <div class="modal" id="mod-end">
                 <h1 class="modal-title"></h1>
                 <img src="./congrats.svg" alt="congrats">
                 <button id="try-again">Try Again</button>
+            </div>
+        </div>
+        <div class="modal-container" id="mod-con-form">
+            <div class="modal" id="mod-form">
+                <h1 class="modal-title">Edit Player Names</h1>
+                <form action="#">
+                    <input type="text" name="player-1" id="player-1" placeholder="Player 1">
+                    <input type="text" name="player-2" id="player-2" placeholder="Player 2">
+                    <button id="save-nms-btn">Save</button>
+                </form>
             </div>
         </div>
     </div>
