@@ -12,8 +12,9 @@ let gameBoard = (function() {
         }
     }
 
-    function setBoard(pos, sign) {
+    function setBoard(pos) {
         if ((0 <= pos) && (pos <= 8)) {
+            const sign = displayController.getTurnOwner();
             if (sign == "X" || sign == "O") {
                 if (isEmpty(pos)) {
                     _board[pos] = sign;
@@ -34,13 +35,13 @@ let gameBoard = (function() {
 
     function isWinner(sign) {
         // There is an X axis win of sign
-        if ((getBoardPos(0) == getBoardPos(1) == getBoardPos(2) == sign) || (getBoardPos(3) == getBoardPos(4) == getBoardPos(5) == sign) || (getBoardPos(6) == getBoardPos(7) == getBoardPos(8) == sign)) {
+        if (((getBoardPos(0) == getBoardPos(1)) && (getBoardPos(1) == getBoardPos(2)) && (getBoardPos(2) == sign)) || ((getBoardPos(3) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(5)) && (getBoardPos(5) == sign)) || ((getBoardPos(6) == getBoardPos(7)) && (getBoardPos(7) == getBoardPos(8)) && (getBoardPos(8) == sign))) {
             return true;
         // There is an Y axis win of sign
-        } else if ((getBoardPos(0) == getBoardPos(3) == getBoardPos(6) == sign) || (getBoardPos(1) == getBoardPos(4) == getBoardPos(7) == sign) || (getBoardPos(2) == getBoardPos(5) == getBoardPos(8) == sign)) {
+        } else if (((getBoardPos(0) == getBoardPos(3)) && (getBoardPos(3) == getBoardPos(6)) && (getBoardPos(6) == sign)) || ((getBoardPos(1) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(7)) && (getBoardPos(7) == sign)) || ((getBoardPos(2) == getBoardPos(5)) && (getBoardPos(5) == getBoardPos(8)) && (getBoardPos(8) == sign))) {
             return true;
         // There is a diagonal win of sign
-        } else if ((getBoardPos(0) == getBoardPos(4) == getBoardPos(8) == sign) || (getBoardPos(2) == getBoardPos(4) == getBoardPos(6) == sign)) {
+        } else if (((getBoardPos(0) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(8)) && (getBoardPos(8) == sign)) || ((getBoardPos(2) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(6)) && (getBoardPos(6) == sign))) {
             return true;
         } else {
             return false;
@@ -59,8 +60,7 @@ let gameBoard = (function() {
 let displayController = (function() {
     'use strict';
 
-    // '1' if is turn for Player 1 and '2' if is turn for Player 2
-    let _turnOwner = 1;
+    let _turnOwner = "X";
     // The game has 9 max moves. In each mov the Counter increments by one
     let _movCounter = 1;
     const _gameSquares = document.querySelectorAll('.game-square');
@@ -70,22 +70,35 @@ let displayController = (function() {
         element.addEventListener('click', () => selectMov(element.id.slice(3)));
     });
 
+    function changeTurnOwner() {
+        if (_turnOwner == "X") {
+            _turnOwner = "O";
+        } else {
+            _turnOwner = "X";
+        }
+    }
+
+    function getTurnOwner() {
+        return _turnOwner;
+    }
+
     function selectMov(pos) {
         // First of all I need to check if the Square is occupied by another sign
         if (gameBoard.isEmpty(pos)) {
-            // Fill in the board array with the correct value
-            if (_turnOwner == 1) {
-                gameBoard.setBoard(pos, "X");
-                _turnOwner = 2;
-            } else {
-                gameBoard.setBoard(pos, "O");
-                _turnOwner = 1;
-            }
+            // Fill in the board array
+            gameBoard.setBoard(pos);
             // Paint the value on screen
             paintSquare(pos);
-            _movCounter++;
             // At last I need to check if there is a winner
-            
+            if (gameBoard.isWinner(getTurnOwner())) {
+                const modalContainer = document.querySelector('.modal-container');
+                const tryAgain = document.getElementById('try-again');
+                modalContainer.classList.add('show');
+            } else {
+                _movCounter++;
+                // Finally if there is no winner, we can change the player turn
+                changeTurnOwner();
+            }
         } else {
             console.log("You are trying to fill an occupied square!!!");
         }
@@ -96,10 +109,7 @@ let displayController = (function() {
         _gameSquares[pos].textContent = gameBoard.getBoardPos(pos);
     }
 
-    return {
-        selectMov,
-        paintSquare
-    }
+    return {getTurnOwner}
 })();
 
 // A factory for the players
