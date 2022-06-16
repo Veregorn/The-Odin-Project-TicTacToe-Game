@@ -48,11 +48,18 @@ let gameBoard = (function() {
         }
     }
 
+    function resetBoard() {
+        for (let i = 0; i < 9; i++) {
+            _board[i] = "";
+        }
+    }
+
     return {
         isEmpty,
         setBoard,
         getBoardPos,
-        isWinner
+        isWinner,
+        resetBoard
     }
 })();
 
@@ -63,12 +70,19 @@ let displayController = (function() {
     let _turnOwner = "X";
     // The game has 9 max moves. In each mov the Counter increments by one
     let _movCounter = 1;
+    // DOM attributes
     const _gameSquares = document.querySelectorAll('.game-square');
-
+    const _modalContainer = document.querySelector('.modal-container');
+    const _modalTitle = document.querySelector('.modal-title');
+    const _tryAgain = document.getElementById('try-again');
+    
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
         element.addEventListener('click', () => selectMov(element.id.slice(3)));
     });
+
+    // Adding Event Listener to 'Try Again' button
+    _tryAgain.addEventListener('click', () => {resetGame()});
 
     function changeTurnOwner() {
         if (_turnOwner == "X") {
@@ -90,21 +104,18 @@ let displayController = (function() {
             // Paint the value on screen
             paintSquare(pos);
             // I need to check if there is a winner
-            const modalContainer = document.querySelector('.modal-container');
-            const tryAgain = document.getElementById('try-again');
-            const modalTitle = document.querySelector('.modal-title');
             if (gameBoard.isWinner(getTurnOwner())) {
                 if (getTurnOwner() == "X") {
-                    modalTitle.textContent = player1.getName() + " wins!!!";
+                    _modalTitle.textContent = player1.getName() + " wins!!!";
                 } else {
-                    modalTitle.textContent = player2.getName() + " wins!!!";
+                    _modalTitle.textContent = player2.getName() + " wins!!!";
                 }
-                modalContainer.classList.add('show');
+                _modalContainer.classList.add('show');
             } else {
                 // I need to check if there's a tie
                 if (_movCounter == 9) {
-                    modalTitle.textContent = "There's a TIE. Nobody wins";
-                    modalContainer.classList.add('show');
+                    _modalTitle.textContent = "There's a TIE. Nobody wins";
+                    _modalContainer.classList.add('show');
                 } else {
                     // If there is no winner and there is no tie, we can change the player turn and move the counter
                     changeTurnOwner();
@@ -119,6 +130,22 @@ let displayController = (function() {
     // Writes the value on screen
     function paintSquare(pos) {
         _gameSquares[pos].textContent = gameBoard.getBoardPos(pos);
+    }
+
+    // Clear all the signs in the displaying board
+    function cleanDisplay() {
+        for (let i = 0; i < 9; i++) {
+            _gameSquares[i].textContent = "";
+        }
+    }
+
+    // Reset all the game values for a new one
+    function resetGame() {
+        gameBoard.resetBoard();
+        cleanDisplay();
+        _modalContainer.classList.remove('show');
+        _movCounter = 1;
+        _turnOwner = "X";
     }
 
     return {getTurnOwner}
