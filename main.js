@@ -89,15 +89,27 @@ let displayController = (function() {
             gameBoard.setBoard(pos);
             // Paint the value on screen
             paintSquare(pos);
-            // At last I need to check if there is a winner
+            // I need to check if there is a winner
+            const modalContainer = document.querySelector('.modal-container');
+            const tryAgain = document.getElementById('try-again');
+            const modalTitle = document.querySelector('.modal-title');
             if (gameBoard.isWinner(getTurnOwner())) {
-                const modalContainer = document.querySelector('.modal-container');
-                const tryAgain = document.getElementById('try-again');
+                if (getTurnOwner() == "X") {
+                    modalTitle.textContent = player1.getName() + " wins!!!";
+                } else {
+                    modalTitle.textContent = player2.getName() + " wins!!!";
+                }
                 modalContainer.classList.add('show');
             } else {
-                _movCounter++;
-                // Finally if there is no winner, we can change the player turn
-                changeTurnOwner();
+                // I need to check if there's a tie
+                if (_movCounter == 9) {
+                    modalTitle.textContent = "There's a TIE. Nobody wins";
+                    modalContainer.classList.add('show');
+                } else {
+                    // If there is no winner and there is no tie, we can change the player turn and move the counter
+                    changeTurnOwner();
+                    _movCounter++;
+                }
             }
         } else {
             console.log("You are trying to fill an occupied square!!!");
@@ -113,12 +125,15 @@ let displayController = (function() {
 })();
 
 // A factory for the players
-const Player = (type) => {
+const Player = (type,name) => {
     // Only two possible values: 'human' OR 'ia'
     const _type = type;
+    const _name = name;
     let _level = undefined;
 
     const getType = () => _type;
+
+    const getName = () => _name;
     
     const setLevel = (level) => {
         if (_type == "ia") {
@@ -136,12 +151,15 @@ const Player = (type) => {
     
     // Function that generates auto movement for 'ia' type players
     // const genMov = () => ;
-    
-    // Function that captures a human player movement in the game
 
-    return {getType,setLevel,getLevel};
+    return {
+        getType,
+        getName,
+        setLevel,
+        getLevel
+    };
 };
 
 //We need two players to play the game
-const player1 = Player("human");
-const player2 = Player("human");
+const player1 = Player("human", "Bill");
+const player2 = Player("human", "John");
