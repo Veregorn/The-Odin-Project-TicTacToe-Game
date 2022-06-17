@@ -104,7 +104,11 @@ h1 {
     padding-top: 100px;
     display: grid;
     grid-template: repeat(3,150px) / repeat(3,150px);
-    
+    opacity: 0;
+}
+
+#game-board.show {
+    opacity: 1;
 }
 
 .game-square {

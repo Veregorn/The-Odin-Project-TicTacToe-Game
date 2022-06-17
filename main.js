@@ -82,6 +82,9 @@ let displayController = (function() {
     const _player2Input = document.getElementById('player-2');
     const _player1ShownName = document.getElementById('player-1-show-name');
     const _player2ShownName = document.getElementById('player-2-show-name');
+    const _startBtn = document.getElementById('start-game');
+    const _gameBoard = document.getElementById('game-board');
+    const _resetBtn = document.getElementById('reset-game');
     
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
@@ -101,6 +104,12 @@ let displayController = (function() {
         refreshPlayerNames();
         _modalContForm.classList.remove('show');
     });
+
+    // Adding Event Listener to 'Start' button
+    _startBtn.addEventListener('click', () => _gameBoard.classList.add('show'));
+
+    // Adding Event Listener to 'Reset' button
+    _resetBtn.addEventListener('click', () => resetGame());
 
     function refreshPlayerNames() {
         _player1ShownName.textContent = player1.getName();
@@ -167,6 +176,7 @@ let displayController = (function() {
         gameBoard.resetBoard();
         cleanDisplay();
         _modalContEnd.classList.remove('show');
+        _gameBoard.classList.remove('show');
         _movCounter = 1;
         _turnOwner = "X";
     }
