@@ -12,6 +12,17 @@ let gameBoard = (function() {
         }
     }
 
+    // Returns an array with the empty positions
+    function getEmptyPosArray() {
+        let myArray = [];
+        for (let i = 0; i < _board.length; i++) {
+            if (isEmpty(i)) {
+                myArray.push(i);
+            }
+        }
+        return myArray;
+    }
+
     function setBoard(pos) {
         if ((0 <= pos) && (pos <= 8)) {
             const sign = displayController.getTurnOwner();
@@ -59,7 +70,8 @@ let gameBoard = (function() {
         setBoard,
         getBoardPos,
         isWinner,
-        resetBoard
+        resetBoard,
+        getEmptyPosArray
     }
 })();
 
@@ -176,12 +188,12 @@ let displayController = (function() {
     });
 
     function refreshPlayerTypes() {
-        if (player1.getType() == "ai") {
+        if (player1.getType() == "AI") {
             _player1Type.textContent = player1.getType() + ' - ' + player1.getLevel();
         } else {
             _player1Type.textContent = player1.getType();
         }
-        if (player2.getType() == "ai") {
+        if (player2.getType() == "AI") {
             _player2Type.textContent = player2.getType() + ' - ' + player2.getLevel();
         } else {
             _player2Type.textContent = player2.getType();
@@ -234,6 +246,13 @@ let displayController = (function() {
         } else {
             console.log("You are trying to fill an occupied square!!!");
         }
+        // At last, I check if next turn is for an AI player, in that case I call my function selectMov() recursively
+        if ((getTurnOwner() == "X") && (player1.getType() == "AI")) {
+            setTimeout(() => {selectMov(player1.genMov());}, 1000);
+        }
+        if ((getTurnOwner() == "O") && (player2.getType() == "AI")) {
+            setTimeout(() => {selectMov(player2.genMov());}, 1000);
+        }
     }
 
     // Writes the value on screen
@@ -263,7 +282,7 @@ let displayController = (function() {
 
 // A factory for the players
 const Player = (type,name) => {
-    // Only two possible values: 'human' OR 'ai'
+    // Only two possible values: 'human' OR 'AI'
     let _type = type;
     let _name = name;
     let _level = undefined;
@@ -281,7 +300,7 @@ const Player = (type,name) => {
     }
     
     const setLevel = (level) => {
-        if (_type == "ai") {
+        if (_type == "AI") {
             if (level == "easy" || level == "hard") {
                 _level = level;
             } else {
@@ -295,7 +314,19 @@ const Player = (type,name) => {
     const getLevel = () => _level;
     
     // Function that generates auto movement for 'ia' type players
-    // const genMov = () => ;
+    const genMov = () => {
+        // We need to chose AI mov from the empty squares
+        const myArray = gameBoard.getEmptyPosArray();
+        let result;
+        if (getLevel() == "easy") {
+            // Simply return a random value
+            result = myArray[Math.floor(Math.random()*myArray.length)];
+        } else {
+            // Here I need to implement my Minimax Algorithm
+            result = myArray[Math.floor(Math.random()*myArray.length)];
+        }
+        return result;
+    };
 
     return {
         getType,
@@ -303,7 +334,8 @@ const Player = (type,name) => {
         getName,
         setLevel,
         getLevel,
-        setName
+        setName,
+        genMov
     };
 };
 
