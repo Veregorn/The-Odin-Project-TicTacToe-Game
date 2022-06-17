@@ -85,6 +85,7 @@ let displayController = (function() {
     const _startBtn = document.getElementById('start-game');
     const _gameBoard = document.getElementById('game-board');
     const _resetBtn = document.getElementById('reset-game');
+    const _modalContAI = document.getElementById('mod-con-ai');
     const _human1Radio = document.getElementById('human-1');
     const _human2Radio = document.getElementById('human-2');
     const _ai1Radio = document.getElementById('ai-1');
@@ -93,6 +94,10 @@ let displayController = (function() {
     const _easy2Radio = document.getElementById('easy-2');
     const _hard1Radio = document.getElementById('hard-1');
     const _hard2Radio = document.getElementById('hard-2');
+    const _aiOptionsBtn = document.getElementById('ai-options');
+    const _saveAIBtn = document.getElementById('save-ai-btn');
+    const _player1Type = document.getElementById('player-1-type');
+    const _player2Type = document.getElementById('player-2-type');
     
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
@@ -136,6 +141,52 @@ let displayController = (function() {
         _easy2Radio.disabled = false;
         _hard2Radio.disabled = false;
     });
+
+    // Adding Event Listener to 'AI Options' button
+    _aiOptionsBtn.addEventListener('click', () => _modalContAI.classList.add('show'));
+
+    // Adding Event Listener to 'Save AI Options' button
+    _saveAIBtn.addEventListener('click', () => {
+        // Set values for player 1
+        if (_human1Radio.checked) {
+            player1.setType(_human1Radio.value);
+        } else {
+            player1.setType(_ai1Radio.value);
+            if (_easy1Radio.checked) {
+                player1.setLevel(_easy1Radio.value);
+            } else {
+                player1.setLevel(_hard1Radio.value);
+            }
+        }
+        // Set values for player 2
+        if (_human2Radio.checked) {
+            player2.setType(_human2Radio.value);
+        } else {
+            player2.setType(_ai2Radio.value);
+            if (_easy2Radio.checked) {
+                player2.setLevel(_easy2Radio.value);
+            } else {
+                player2.setLevel(_hard2Radio.value);
+            }
+        }
+        // Next we need to refresh player types to display
+        refreshPlayerTypes();
+        // At last, I change the opacity of the modal window
+        _modalContAI.classList.remove('show');
+    });
+
+    function refreshPlayerTypes() {
+        if (player1.getType() == "ai") {
+            _player1Type.textContent = player1.getType() + ' - ' + player1.getLevel();
+        } else {
+            _player1Type.textContent = player1.getType();
+        }
+        if (player2.getType() == "ai") {
+            _player2Type.textContent = player2.getType() + ' - ' + player2.getLevel();
+        } else {
+            _player2Type.textContent = player2.getType();
+        }
+    }
 
     function refreshPlayerNames() {
         _player1ShownName.textContent = player1.getName();
@@ -213,11 +264,13 @@ let displayController = (function() {
 // A factory for the players
 const Player = (type,name) => {
     // Only two possible values: 'human' OR 'ai'
-    const _type = type;
+    let _type = type;
     let _name = name;
     let _level = undefined;
 
     const getType = () => _type;
+
+    const setType = (type) => _type = type;
 
     const getName = () => _name;
 
@@ -246,6 +299,7 @@ const Player = (type,name) => {
 
     return {
         getType,
+        setType,
         getName,
         setLevel,
         getLevel,

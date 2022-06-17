@@ -10,10 +10,12 @@
 <body>
     <div id="container">
         <h1>Tic Tac Toe</h1>
-        <div class="battle-pres">
+        <div class="battle-pres-names">
+            <p class="player-type" id="player-1-type">human</p>
             <p class="player-name" id="player-1-show-name">Player 1</p>
             <p class="versus">Vs</p>
             <p class="player-name" id="player-2-show-name">Player 2</p>
+            <p class="player-type" id="player-2-type">human</p>
         </div>
         <div class="control-buttons">
             <button id="edit-names">Edit Names</button>
@@ -49,7 +51,7 @@
                 </form>
             </div>
         </div>
-        <div class="modal-container show" id="mod-con-ai">
+        <div class="modal-container" id="mod-con-ai">
             <div class="modal" id="mod-ai">
                 <h1 class="modal-title">Select your Preferences</h1>
                 <form action="javascript:void(0);" id="ai-form">

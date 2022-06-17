@@ -77,7 +77,7 @@ h1 {
     font-weight: bolder;
 }
 
-.battle-pres {
+.battle-pres-names {
     padding-top: 100px;
     display: flex;
     align-items: center;
@@ -85,7 +85,7 @@ h1 {
     gap: 50px;
 }
 
-.battle-pres p {
+.battle-pres-names p {
     font-family: 'Roboto', sans-serif;
     color: #D2E48E;
 }
@@ -98,10 +98,15 @@ h1 {
     font-size: 38px;
 }
 
+.player-type {
+    font-size: 18px;
+    margin-top: 12px;
+}
+
 #game-board {
     width: 460px;
     margin: 0 auto;
-    padding-top: 100px;
+    padding-top: 50px;
     display: grid;
     grid-template: repeat(3,150px) / repeat(3,150px);
     opacity: 0;
@@ -175,7 +180,7 @@ h1 {
 }
 
 #mod-end {
-    margin-top: 1000px;
+    margin-top: 1050px;
 }
 
 #mod-form, #mod-ai {
