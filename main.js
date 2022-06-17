@@ -85,6 +85,14 @@ let displayController = (function() {
     const _startBtn = document.getElementById('start-game');
     const _gameBoard = document.getElementById('game-board');
     const _resetBtn = document.getElementById('reset-game');
+    const _human1Radio = document.getElementById('human-1');
+    const _human2Radio = document.getElementById('human-2');
+    const _ai1Radio = document.getElementById('ai-1');
+    const _ai2Radio = document.getElementById('ai-2');
+    const _easy1Radio = document.getElementById('easy-1');
+    const _easy2Radio = document.getElementById('easy-2');
+    const _hard1Radio = document.getElementById('hard-1');
+    const _hard2Radio = document.getElementById('hard-2');
     
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
@@ -110,6 +118,24 @@ let displayController = (function() {
 
     // Adding Event Listener to 'Reset' button
     _resetBtn.addEventListener('click', () => resetGame());
+
+    // Adding Event Listeners to radio buttons to enable-disable ai controls
+    _human1Radio.addEventListener('click', () => {
+        _easy1Radio.disabled = true;
+        _hard1Radio.disabled = true;
+    });
+    _ai1Radio.addEventListener('click', () => {
+        _easy1Radio.disabled = false;
+        _hard1Radio.disabled = false;
+    });
+    _human2Radio.addEventListener('click', () => {
+        _easy2Radio.disabled = true;
+        _hard2Radio.disabled = true;
+    });
+    _ai2Radio.addEventListener('click', () => {
+        _easy2Radio.disabled = false;
+        _hard2Radio.disabled = false;
+    });
 
     function refreshPlayerNames() {
         _player1ShownName.textContent = player1.getName();
@@ -186,7 +212,7 @@ let displayController = (function() {
 
 // A factory for the players
 const Player = (type,name) => {
-    // Only two possible values: 'human' OR 'ia'
+    // Only two possible values: 'human' OR 'ai'
     const _type = type;
     let _name = name;
     let _level = undefined;
@@ -202,14 +228,14 @@ const Player = (type,name) => {
     }
     
     const setLevel = (level) => {
-        if (_type == "ia") {
-            if (level == "easy" || level == "medium" || level == "hard") {
+        if (_type == "ai") {
+            if (level == "easy" || level == "hard") {
                 _level = level;
             } else {
-                console.log("Invalid level entry. Level must be one of these: easy, medium, hard");
+                console.log("Invalid level entry. Level must be one of these: easy, hard");
             }
         } else {
-            console.log("You can't set IA level in a human player");
+            console.log("You can't set AI level in a human player");
         }
     }
     

@@ -16,9 +16,10 @@
             <p class="player-name" id="player-2-show-name">Player 2</p>
         </div>
         <div class="control-buttons">
+            <button id="edit-names">Edit Names</button>
             <button id="start-game">Start</button>
-            <button id="edit-names">Edit Player Names</button>
             <button id="reset-game">Reset</button>
+            <button id="ai-options">AI Options</button>
         </div>
         <div id="game-board">
             <div class="game-square top left" id="gs-0"></div>
@@ -45,6 +46,66 @@
                     <input type="text" name="player-1" id="player-1" placeholder="Player 1">
                     <input type="text" name="player-2" id="player-2" placeholder="Player 2">
                     <button id="save-nms-btn">Save</button>
+                </form>
+            </div>
+        </div>
+        <div class="modal-container show" id="mod-con-ai">
+            <div class="modal" id="mod-ai">
+                <h1 class="modal-title">Select your Preferences</h1>
+                <form action="javascript:void(0);" id="ai-form">
+                    <fieldset>
+                        <legend>Player 1</legend>
+                        <ul>
+                            <li>
+                                <input type="radio" name="player-1-type" id="human-1" value="human" checked>
+                                <label for="human-1">Human</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="player-1-type" id="ai-1" value="ai">
+                                <label for="ai-1">Artificial Intelligence</label>
+                                <fieldset class="int">
+                                    <legend>Level</legend>
+                                    <ul>
+                                        <li>
+                                            <input type="radio" name="ai-1-level" id="easy-1" value="easy" checked disabled>
+                                            <label for="easy-1">Easy</label>
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="ai-1-level" id="hard-1" value="hard" disabled>
+                                            <label for="hard-1">Hard</label>
+                                        </li>
+                                    </ul>
+                                </fieldset>
+                            </li>
+                        </ul>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Player 2</legend>
+                        <ul>
+                            <li>
+                                <input type="radio" name="player-2-type" id="human-2" value="human" checked>
+                                <label for="human-2">Human</label>
+                            </li>
+                            <li>
+                                <input type="radio" name="player-2-type" id="ai-2" value="ai">
+                                <label for="ai-2">Artificial Intelligence</label>
+                                <fieldset class="int">
+                                    <legend>Level</legend>
+                                    <ul>
+                                        <li>
+                                            <input type="radio" name="ai-2-level" id="easy-2" value="easy" checked disabled>
+                                            <label for="easy-2">Easy</label>
+                                        </li>
+                                        <li>
+                                            <input type="radio" name="ai-2-level" id="hard-2" value="hard" disabled>
+                                            <label for="hard-2">Hard</label>
+                                        </li>
+                                    </ul>
+                                </fieldset>
+                            </li>
+                        </ul>
+                    </fieldset>
+                    <button id="save-ai-btn">Save</button>
                 </form>
             </div>
         </div>
