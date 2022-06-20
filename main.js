@@ -2,33 +2,36 @@
 let gameBoard = (function() {
     'use strict';
 
-    let _board = ["","","","","","","","",""];
+    // The game board is represented by a matrix of 3x3
+    let _board = [["","",""],["","",""],["","",""]];
 
-    function isEmpty(pos) {
-        if (_board[pos] == "") {
+    function isEmpty(x,y) {
+        if (_board[x][y] == "") {
             return true;
         } else {
             return false;
         }
     }
 
-    // Returns an array with the empty positions
+    // Returns an array with the empty positions (myArray = [[x,y],[y,z],[a,b]])
     function getEmptyPosArray() {
         let myArray = [];
         for (let i = 0; i < _board.length; i++) {
-            if (isEmpty(i)) {
-                myArray.push(i);
+            for (let j = 0; j < _board[i].length; j++) {
+                if (isEmpty(i,j)) {
+                    myArray.push([i,j]);
+                }
             }
         }
         return myArray;
     }
 
-    function setBoard(pos) {
-        if ((0 <= pos) && (pos <= 8)) {
+    function setBoard(x,y) {
+        if ((0 <= x) && (x <= 2) && (0 <= y) && (y <= 2)) {
             const sign = displayController.getTurnOwner();
             if (sign == "X" || sign == "O") {
-                if (isEmpty(pos)) {
-                    _board[pos] = sign;
+                if (isEmpty(x,y)) {
+                    _board[x][y] = sign;
                 } else {
                     console.log("Position already occupied!!!");
                 }
@@ -40,28 +43,58 @@ let gameBoard = (function() {
         }
     }
 
-    function getBoardPos(pos) {
-        return _board[pos];
+    function getBoardPos(x,y) {
+        return _board[x][y];
     }
 
-    function isWinner(sign) {
-        // There is an X axis win of sign
-        if (((getBoardPos(0) == getBoardPos(1)) && (getBoardPos(1) == getBoardPos(2)) && (getBoardPos(2) == sign)) || ((getBoardPos(3) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(5)) && (getBoardPos(5) == sign)) || ((getBoardPos(6) == getBoardPos(7)) && (getBoardPos(7) == getBoardPos(8)) && (getBoardPos(8) == sign))) {
-            return true;
-        // There is an Y axis win of sign
-        } else if (((getBoardPos(0) == getBoardPos(3)) && (getBoardPos(3) == getBoardPos(6)) && (getBoardPos(6) == sign)) || ((getBoardPos(1) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(7)) && (getBoardPos(7) == sign)) || ((getBoardPos(2) == getBoardPos(5)) && (getBoardPos(5) == getBoardPos(8)) && (getBoardPos(8) == sign))) {
-            return true;
-        // There is a diagonal win of sign
-        } else if (((getBoardPos(0) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(8)) && (getBoardPos(8) == sign)) || ((getBoardPos(2) == getBoardPos(4)) && (getBoardPos(4) == getBoardPos(6)) && (getBoardPos(6) == sign))) {
-            return true;
-        } else {
-            return false;
+    function evaluateBoard() {
+        // Checking for rows for X or O victory
+        for (let row = 0; row < 3; row++) {
+            if (_board[row][0] == _board[row][1] && _board[row][1] == _board[row][2]) {
+                if (_board[row][0] == 'X') {
+                    return +10;
+                } else if (_board[row][0] == 'O') {
+                    return -10;
+                }
+            }
         }
+
+        // Checking for columns for X or O victory
+        for (let col = 0; col < 3; col++) {
+            if (_board[0][col] == _board[1][col] && _board[1][col] == _board[2][col]) {
+                if (_board[0][col] == 'X') {
+                    return +10;
+                } else if (_board[0][col] == 'O') {
+                    return -10;
+                }
+            }
+        }
+
+        // Checking for diagonals for X or O victory
+        if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2]) {
+            if (_board[0][0] == 'X') {
+                return +10;
+            } else if (_board[0][0] == 'O') {
+                return -10;
+            }
+        }
+        if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0]) {
+            if (_board[0][2] == 'X') {
+                return +10;
+            } else if (_board[0][2] == 'O') {
+                return -10;
+            }
+        }
+
+        // Else if none of them have won, then return 0
+        return 0;
     }
 
     function resetBoard() {
-        for (let i = 0; i < 9; i++) {
-            _board[i] = "";
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                _board[i][j] = "";    
+            }
         }
     }
 
@@ -69,9 +102,9 @@ let gameBoard = (function() {
         isEmpty,
         setBoard,
         getBoardPos,
-        isWinner,
         resetBoard,
-        getEmptyPosArray
+        getEmptyPosArray,
+        evaluateBoard
     }
 })();
 
@@ -113,7 +146,7 @@ let displayController = (function() {
     
     // Adding Event Listeners to game-square class divs
     _gameSquares.forEach(element => {
-        element.addEventListener('click', () => selectMov(element.id.slice(3)));
+        element.addEventListener('click', () => selectMov(element.id.slice(3,4), element.id.slice(4)));
     });
 
     // Adding Event Listener to 'Try Again' button
@@ -217,47 +250,48 @@ let displayController = (function() {
         return _turnOwner;
     }
 
-    function selectMov(pos) {
+    function selectMov(x,y) {
         // First of all I need to check if the Square is occupied by another sign
-        if (gameBoard.isEmpty(pos)) {
+        if (gameBoard.isEmpty(x,y)) {
             // Fill in the board array
-            gameBoard.setBoard(pos);
+            gameBoard.setBoard(x,y);
             // Paint the value on screen
-            paintSquare(pos);
+            paintSquare(x,y);
             // I need to check if there is a winner
-            if (gameBoard.isWinner(getTurnOwner())) {
-                if (getTurnOwner() == "X") {
-                    _modalTitle.textContent = player1.getName() + " wins!!!";
-                } else {
-                    _modalTitle.textContent = player2.getName() + " wins!!!";
-                }
+            const evaluation = gameBoard.evaluateBoard();
+            if (evaluation == +10) {
+                _modalTitle.textContent = player1.getName() + " wins!!!";
+                _modalContEnd.classList.add('show');
+            } else if (evaluation == -10) {
+                _modalTitle.textContent = player2.getName() + " wins!!!";
+                _modalContEnd.classList.add('show');
+            } else if (_movCounter == 9) {
+                // I need to check if there's a tie
+                _modalTitle.textContent = "There's a TIE. Nobody wins";
                 _modalContEnd.classList.add('show');
             } else {
-                // I need to check if there's a tie
-                if (_movCounter == 9) {
-                    _modalTitle.textContent = "There's a TIE. Nobody wins";
-                    _modalContEnd.classList.add('show');
-                } else {
-                    // If there is no winner and there is no tie, we can change the player turn and move the counter
-                    changeTurnOwner();
-                    _movCounter++;
-                }
+                // If there is no winner and there is no tie, we can change the player turn and move the counter
+                changeTurnOwner();
+                _movCounter++;
             }
         } else {
             console.log("You are trying to fill an occupied square!!!");
         }
         // At last, I check if next turn is for an AI player, in that case I call my function selectMov() recursively
         if ((getTurnOwner() == "X") && (player1.getType() == "AI")) {
-            setTimeout(() => {selectMov(player1.genMov());}, 1000);
+            const mov = player1.genMov();
+            setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
         }
         if ((getTurnOwner() == "O") && (player2.getType() == "AI")) {
-            setTimeout(() => {selectMov(player2.genMov());}, 1000);
+            const mov = player2.genMov();
+            setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
         }
     }
 
     // Writes the value on screen
-    function paintSquare(pos) {
-        _gameSquares[pos].textContent = gameBoard.getBoardPos(pos);
+    function paintSquare(x,y) {
+        const square = document.getElementById('gs-' + x + y);
+        square.textContent = gameBoard.getBoardPos(x,y);
     }
 
     // Clear all the signs in the displaying board
