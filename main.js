@@ -115,6 +115,8 @@ let displayController = (function() {
     let _turnOwner = "X";
     // The game has 9 max moves. In each mov the Counter increments by one
     let _movCounter = 1;
+    // A mark that info about the state of the game
+    let _gameFinished = true;
     // DOM attributes
     const _gameSquares = document.querySelectorAll('.game-square');
     const _modalContEnd = document.getElementById('mod-con-end');
@@ -164,7 +166,19 @@ let displayController = (function() {
     });
 
     // Adding Event Listener to 'Start' button
-    _startBtn.addEventListener('click', () => _gameBoard.classList.add('show'));
+    _startBtn.addEventListener('click', () => {
+        _gameBoard.classList.add('show');
+        _gameFinished = false;
+        // If some player is an AI I need to generate a move
+        if ((getTurnOwner() == "X") && (player1.getType() == "AI")) {
+            const mov = player1.genMov();
+            setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
+        }
+        if ((getTurnOwner() == "O") && (player2.getType() == "AI")) {
+            const mov = player2.genMov();
+            setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
+        }
+    });
 
     // Adding Event Listener to 'Reset' button
     _resetBtn.addEventListener('click', () => resetGame());
@@ -262,9 +276,11 @@ let displayController = (function() {
             if (evaluation == +10) {
                 _modalTitle.textContent = player1.getName() + " wins!!!";
                 _modalContEnd.classList.add('show');
+                _gameFinished = true;
             } else if (evaluation == -10) {
                 _modalTitle.textContent = player2.getName() + " wins!!!";
                 _modalContEnd.classList.add('show');
+                _gameFinished = true;
             } else if (_movCounter == 9) {
                 // I need to check if there's a tie
                 _modalTitle.textContent = "There's a TIE. Nobody wins";
@@ -278,11 +294,11 @@ let displayController = (function() {
             console.log("You are trying to fill an occupied square!!!");
         }
         // At last, I check if next turn is for an AI player, in that case I call my function selectMov() recursively
-        if ((getTurnOwner() == "X") && (player1.getType() == "AI")) {
+        if ((getTurnOwner() == "X") && (player1.getType() == "AI") && (!_gameFinished)) {
             const mov = player1.genMov();
             setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
         }
-        if ((getTurnOwner() == "O") && (player2.getType() == "AI")) {
+        if ((getTurnOwner() == "O") && (player2.getType() == "AI") && (!_gameFinished)) {
             const mov = player2.genMov();
             setTimeout(() => {selectMov(mov[0],mov[1]);}, 1000);
         }
