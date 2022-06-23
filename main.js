@@ -173,6 +173,8 @@ let displayController = (function() {
     const _saveAIBtn = document.getElementById('save-ai-btn');
     const _player1Type = document.getElementById('player-1-type');
     const _player2Type = document.getElementById('player-2-type');
+    const _player1Wins = document.getElementById('victories-p1');
+    const _player2Wins = document.getElementById('victories-p2');
     
     // Adding Event Listeners to game-square class div
     _gameSquares.forEach(element => {
@@ -302,12 +304,16 @@ let displayController = (function() {
             paintSquare(x,y);
             // I need to check if there is a winner
             const evaluation = gameBoard.evaluateBoard(getTurnOwner());
-            if (evaluation == +10) {
+            if (evaluation != 0 && getTurnOwner() == 'X') {
                 _modalTitle.textContent = player1.getName() + " wins!!!";
+                player1.increaseWins();
+                _player1Wins.textContent = player1.getWins();
                 _modalContEnd.classList.add('show');
                 _gameFinished = true;
-            } else if (evaluation == -10) {
+            } else if (evaluation != 0 && getTurnOwner() == 'O') {
                 _modalTitle.textContent = player2.getName() + " wins!!!";
+                player2.increaseWins();
+                _player2Wins.textContent = player2.getWins();
                 _modalContEnd.classList.add('show');
                 _gameFinished = true;
             } else if (_movCounter == 9) {
@@ -365,6 +371,11 @@ const Player = (type,name) => {
     let _type = type;
     let _name = name;
     let _level = undefined;
+    let _wins = 0;
+
+    const getWins = () => _wins;
+
+    const increaseWins = () => _wins++;
 
     const getType = () => _type;
 
@@ -542,13 +553,12 @@ const Player = (type,name) => {
         setLevel,
         getLevel,
         setName,
-        genMov
+        genMov,
+        getWins,
+        increaseWins
     };
 };
 
 //We need two players to play the game
 const player1 = Player("human", "Player 1");
 const player2 = Player("human", "Player 2");
-// Testing
-//player1.setLevel("hard");
-//console.log(player1.genMov());

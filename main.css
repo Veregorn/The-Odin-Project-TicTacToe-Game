@@ -77,15 +77,23 @@ h1 {
     font-weight: bolder;
 }
 
-.battle-pres-names {
-    padding-top: 100px;
+.battle-pres-names, .victories {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 50px;
 }
 
-.battle-pres-names p {
+.battle-pres-names {
+    padding-top: 60px;
+}
+
+.victories {
+    padding-top: 30px;
+    gap: 120px;
+}
+
+.battle-pres-names p, .victories p {
     font-family: 'Roboto', sans-serif;
     color: #D2E48E;
 }
@@ -98,9 +106,17 @@ h1 {
     font-size: 38px;
 }
 
+.victory-number {
+    font-size: 22px;
+}
+
 .player-type {
     font-size: 18px;
     margin-top: 12px;
+}
+
+.wins {
+    font-size: 32px;
 }
 
 #game-board {
