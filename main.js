@@ -26,15 +26,10 @@ let gameBoard = (function() {
         return myArray;
     }
 
-    function setBoard(x,y) {
+    function setBoard(x,y,sign) {
         if ((0 <= x) && (x <= 2) && (0 <= y) && (y <= 2)) {
-            const sign = displayController.getTurnOwner();
-            if (sign == "X" || sign == "O") {
-                if (isEmpty(x,y)) {
-                    _board[x][y] = sign;
-                } else {
-                    console.log("Position already occupied!!!");
-                }
+            if (sign == "X" || sign == "O" || sign == "") {
+                _board[x][y] = sign;
             } else {
                 console.log("Invalid player sign received!!!");
             }
@@ -47,14 +42,23 @@ let gameBoard = (function() {
         return _board[x][y];
     }
 
-    function evaluateBoard() {
+    // Function that evaluate board for MiniMax algorithm. Sign indicates maximizer player
+    function evaluateBoard(sign) {
         // Checking for rows for X or O victory
         for (let row = 0; row < 3; row++) {
             if (_board[row][0] == _board[row][1] && _board[row][1] == _board[row][2]) {
                 if (_board[row][0] == 'X') {
-                    return +10;
+                    if (sign == 'X') {
+                        return +10;
+                    } else {
+                        return -10;
+                    }
                 } else if (_board[row][0] == 'O') {
-                    return -10;
+                    if (sign == 'O') {
+                        return +10;
+                    } else {
+                        return -10;
+                    }
                 }
             }
         }
@@ -63,9 +67,17 @@ let gameBoard = (function() {
         for (let col = 0; col < 3; col++) {
             if (_board[0][col] == _board[1][col] && _board[1][col] == _board[2][col]) {
                 if (_board[0][col] == 'X') {
-                    return +10;
+                    if (sign == 'X') {
+                        return +10;
+                    } else {
+                        return -10;
+                    }
                 } else if (_board[0][col] == 'O') {
-                    return -10;
+                    if (sign == 'O') {
+                        return +10;
+                    } else {
+                        return -10;   
+                    }
                 }
             }
         }
@@ -73,16 +85,32 @@ let gameBoard = (function() {
         // Checking for diagonals for X or O victory
         if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2]) {
             if (_board[0][0] == 'X') {
-                return +10;
+                if (sign == 'X') {
+                    return +10;
+                } else {
+                    return -10;
+                }
             } else if (_board[0][0] == 'O') {
-                return -10;
+                if (sign == 'O') {
+                    return +10;
+                } else {
+                    return -10;   
+                }
             }
         }
         if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0]) {
             if (_board[0][2] == 'X') {
-                return +10;
+                if (sign == 'X') {
+                    return +10;
+                } else {
+                    return -10;
+                }
             } else if (_board[0][2] == 'O') {
-                return -10;
+                if (sign == 'O') {
+                    return +10;
+                } else {
+                    return -10;   
+                }
             }
         }
 
@@ -146,7 +174,7 @@ let displayController = (function() {
     const _player1Type = document.getElementById('player-1-type');
     const _player2Type = document.getElementById('player-2-type');
     
-    // Adding Event Listeners to game-square class divs
+    // Adding Event Listeners to game-square class div
     _gameSquares.forEach(element => {
         element.addEventListener('click', () => selectMov(element.id.slice(3,4), element.id.slice(4)));
     });
@@ -268,11 +296,12 @@ let displayController = (function() {
         // First of all I need to check if the Square is occupied by another sign
         if (gameBoard.isEmpty(x,y)) {
             // Fill in the board array
-            gameBoard.setBoard(x,y);
+            const sign = getTurnOwner();
+            gameBoard.setBoard(x,y,sign);
             // Paint the value on screen
             paintSquare(x,y);
             // I need to check if there is a winner
-            const evaluation = gameBoard.evaluateBoard();
+            const evaluation = gameBoard.evaluateBoard(getTurnOwner());
             if (evaluation == +10) {
                 _modalTitle.textContent = player1.getName() + " wins!!!";
                 _modalContEnd.classList.add('show');
@@ -363,17 +392,145 @@ const Player = (type,name) => {
     
     const getLevel = () => _level;
     
+    // Function that implements MiniMax Algorithm for hard level AIs
+    // Maximizer plays with 'X' and Minimizer with 'O'
+    const MiniMax = (depth, sign, isMax) => {
+        // First I need to capture the value of the current board's state
+        let score = gameBoard.evaluateBoard(displayController.getTurnOwner());
+
+        // If Maximizer has won the game
+        // return his/her evaluated score
+        if (score == 10) {
+            return score;
+        }
+        
+        // If Minimizer has won the game
+        // return his/her evaluated score
+        if (score == -10) {
+            return score;
+        }
+            
+        // If there are no more moves and
+        // no winner then it is a tie
+        if (gameBoard.getEmptyPosArray().length === 0) {
+            return 0;
+        }
+
+        // If this maximizer's move
+        if (isMax) {
+            let best = -1000;
+    
+            // Traverse all cells
+            for(let i = 0; i < 3; i++) {
+                for(let j = 0; j < 3; j++) {
+                    
+                    // Check if cell is empty
+                    if (gameBoard.isEmpty(i,j)) {
+                        
+                        // Make the move
+                        gameBoard.setBoard(i,j,sign);
+    
+                        // Call minimax recursively
+                        // and choose the maximum value
+                        if (sign == 'X') {
+                            best = Math.max(best, MiniMax(depth + 1, 'O', !isMax));
+                        } else {
+                            best = Math.max(best, MiniMax(depth + 1, 'X', !isMax));
+                        }
+    
+                        // Undo the move
+                        gameBoard.setBoard(i,j,'');
+                    }
+                }
+            }
+            return best - depth;
+        }
+
+        // If this minimizer's move
+        else {
+            let best =  1000;
+    
+            // Traverse all cells
+            for(let i = 0; i < 3; i++) {
+                for(let j = 0; j < 3; j++) {
+                    
+                    // Check if cell is empty
+                    if (gameBoard.isEmpty(i,j)) {
+                        
+                        // Make the move
+                        gameBoard.setBoard(i,j,sign);
+    
+                        // Call minimax recursively
+                        // and choose the minimum value
+                        if (sign == 'X') {
+                            best = Math.min(best, MiniMax(depth + 1, 'O', !isMax));
+                        } else {
+                            best = Math.min(best, MiniMax(depth + 1, 'X', !isMax));
+                        }
+    
+                        // Undo the move
+                        gameBoard.setBoard(i,j,'');
+                    }
+                }
+            }
+            return best + depth;
+        }
+    };
+
+    // Function that returns the best possible move for the player
+    const findBestMove = (sign) => {
+        let bestVal = -1000;
+        let bestMove = ['',''];
+        let moveVal = 0;
+
+        // Traverse all cells, evaluate
+        // minimax function for all empty
+        // cells. And return the cell
+        // with optimal value.
+        for(let i = 0; i < 3; i++) {
+            for(let j = 0; j < 3; j++) {
+                // Check if cell is empty
+                if (gameBoard.isEmpty(i,j)) {
+                    // Make the move
+                    gameBoard.setBoard(i,j,sign);
+
+                    // compute evaluation function
+                    // for this move.
+                    if (sign == 'X') {
+                        moveVal = MiniMax(0, 'O', false);
+                    } else {
+                        moveVal = MiniMax(0, 'X', false);
+                    }
+
+                    // Undo the move
+                    gameBoard.setBoard(i,j,'');
+
+                    // If the value of the current move
+                    // is more than the best value, then
+                    // update best
+                    if (moveVal > bestVal) {
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+        //console.log("The value of the best move is: " + bestVal);
+        return bestMove;
+    };
+
     // Function that generates auto movement for 'ia' type players
     const genMov = () => {
         // We need to chose AI mov from the empty squares
-        const myArray = gameBoard.getEmptyPosArray();
         let result;
         if (getLevel() == "easy") {
             // Simply return a random value
+            const myArray = gameBoard.getEmptyPosArray();
             result = myArray[Math.floor(Math.random()*myArray.length)];
         } else {
-            // Here I need to implement my Minimax Algorithm
-            result = myArray[Math.floor(Math.random()*myArray.length)];
+            // Use Minimax Algorithm
+            result = findBestMove(displayController.getTurnOwner());
         }
         return result;
     };
@@ -392,3 +549,6 @@ const Player = (type,name) => {
 //We need two players to play the game
 const player1 = Player("human", "Player 1");
 const player2 = Player("human", "Player 2");
+// Testing
+//player1.setLevel("hard");
+//console.log(player1.genMov());
